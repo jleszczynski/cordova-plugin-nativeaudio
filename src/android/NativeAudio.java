@@ -110,21 +110,25 @@ public class NativeAudio extends CordovaPlugin implements AudioManager.OnAudioFo
 			//Log.d( LOGTAG, "play - " + audioID );
 
 			if (assetMap.containsKey(audioID)) {
-				NativeAudioAsset asset = assetMap.get(audioID);
-				if (LOOP.equals(action))
-					asset.loop();
-				else
-					asset.play(new Callable<Void>() {
-                        public Void call() throws Exception {
-                            CallbackContext callbackContext = completeCallbacks.get(audioID);
-                            if (callbackContext != null) {
-                                JSONObject done = new JSONObject();
-                                done.put("id", audioID);
-                                callbackContext.sendPluginResult(new PluginResult(Status.OK, done));
+                AudioManager manager = (AudioManager) cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+                
+                if (manager.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+                    NativeAudioAsset asset = assetMap.get(audioID);
+                    if (LOOP.equals(action))
+                        asset.loop();
+                    else
+                        asset.play(new Callable<Void>() {
+                            public Void call() throws Exception {
+                                CallbackContext callbackContext = completeCallbacks.get(audioID);
+                                if (callbackContext != null) {
+                                    JSONObject done = new JSONObject();
+                                    done.put("id", audioID);
+                                    callbackContext.sendPluginResult(new PluginResult(Status.OK, done));
+                                }
+                                return null;
                             }
-                            return null;
-                        }
-                    });
+                        });
+                }
 			} else {
 				return new PluginResult(Status.ERROR, ERROR_NO_AUDIOID);
 			}
