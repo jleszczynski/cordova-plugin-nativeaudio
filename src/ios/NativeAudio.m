@@ -44,7 +44,9 @@ NSString* INFO_VOLUME_CHANGED = @"(NATIVE AUDIO) Volume changed.";
     }
 
     [session setActive: YES error: nil];
-    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+    //Commented to disable sounds when device is in silent mode.
+    //See https://github.com/floatinghotpot/cordova-plugin-nativeaudio/issues/82
+    //[session setCategory:AVAudioSessionCategoryPlayback error:nil];
 }
 
 - (void) parseOptions:(NSDictionary*) options
